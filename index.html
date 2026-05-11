@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Omer Portfolio | مهندس تقني</title>
+    <meta name="description" content="Omer Portfolio - مهندس متخصص في التقنية والحلول الرقمية">
+    <meta name="author" content="Omer">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.128.0/build/three.module.js"
+            }
+        }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #050510;
+            color: #f0f0f0;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+        section {
+            margin: 100px 0;
+            padding: 40px 20px;
+            background: rgba(10, 10, 30, 0.5);
+            backdrop-filter: blur(12px);
+            border-radius: 40px;
+            border: 1px solid rgba(100, 100, 255, 0.3);
+            box-shadow: 0 25px 45px rgba(0,0,0,0.3), 0 0 20px rgba(0,100,255,0.1);
+        }
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            text-align: center;
+            background: linear-gradient(135deg, #aaccff, #6a4eff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .hero {
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            flex-direction: column;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(15px);
+        }
+        .avatar-3d {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin: 0 auto 30px;
+            box-shadow: 0 0 40px rgba(80,80,255,0.5);
+            transition: transform 0.2s ease;
+            cursor: pointer;
+            border: 3px solid #6a4eff;
+        }
+        .avatar-3d img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #fff, #8a6eff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 20px;
+        }
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .stat-item {
+            text-align: center;
+            padding: 15px 25px;
+            background: rgba(106,78,255,0.2);
+            border-radius: 60px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(106,78,255,0.3);
+            transition: 0.3s;
+        }
+        .stat-item:hover {
+            transform: translateY(-5px);
+            background: rgba(106,78,255,0.4);
+        }
+        .stat-number {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #aa88ff;
+        }
+        .hero p {
+            font-size: 1.3rem;
+            margin: 20px 0;
+            max-width: 700px;
+        }
+        .btn {
+            background: linear-gradient(90deg, #2a2aff, #aa44ff);
+            padding: 14px 35px;
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #aa44ff;
+            box-shadow: none;
+        }
+        .btn-outline:hover {
+            background: #aa44ff;
+            transform: scale(1.05);
+        }
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0,0,255,0.4);
+        }
+        .skills-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+        }
+        .skill-card {
+            background: rgba(20,20,50,0.7);
+            backdrop-filter: blur(8px);
+            padding: 25px;
+            border-radius: 30px;
+            width: 220px;
+            text-align: center;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .skill-card:hover {
+            transform: translateY(-15px);
+            border-color: #6a4eff;
+        }
+        .progress-ring {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .projects-links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+        .project-card {
+            background: rgba(10, 10, 30, 0.75);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 25px;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.2);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+        .project-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 10, 30, 0.5);
+            border-radius: 25px;
+            z-index: 0;
+        }
+        .project-card > * {
+            position: relative;
+            z-index: 1;
+        }
+        .project-card:hover {
+            transform: translateY(-8px);
+            border-color: #6a4eff;
+        }
+        .project-img-wrapper {
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+            border-radius: 20px;
+            margin-bottom: 15px;
+        }
+        .project-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        .project-card i {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            color: #aa88ff;
+        }
+        .project-card h4 {
+            margin: 8px 0;
+            font-size: 1.3rem;
+        }
+        .project-card p {
+            font-size: 0.85rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+        .project-btn {
+            background: linear-gradient(90deg, #6a4eff, #aa44ff);
+            padding: 8px 20px;
+            border-radius: 30px;
+            display: inline-block;
+            margin-top: 5px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            transition: 0.3s;
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .project-btn:hover {
+            transform: scale(1.05);
+        }
+        .contact-form {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(20,20,60,0.6);
+            padding: 35px;
+            border-radius: 40px;
+            backdrop-filter: blur(10px);
+        }
+        input, textarea {
+            width: 100%;
+            padding: 14px;
+            margin: 12px 0;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 30px;
+            color: white;
+            font-size: 1rem;
+            font-family: 'Cairo', sans-serif;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #aa44ff;
+        }
+        .contact-info {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+        .contact-info p {
+            margin: 10px 0;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .contact-info a {
+            color: #aa88ff;
+            text-decoration: none;
+            transition: 0.2s;
+            direction: ltr;
+            display: inline-block;
+        }
+        .contact-info a:hover {
+            color: white;
+        }
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .social-icons a {
+            color: white;
+            font-size: 2rem;
+            transition: 0.2s;
+            display: inline-block;
+        }
+        .social-icons a:hover {
+            transform: translateY(-8px);
+            color: #aa66ff;
+        }
+        footer {
+            text-align: center;
+            padding: 30px;
+            background: rgba(0,0,0,0.6);
+            border-radius: 30px;
+            margin-top: 50px;
+        }
+        @media (max-width: 768px) {
+            h2 { font-size: 1.8rem; }
+            .hero h1 { font-size: 2.5rem; }
+            .container { padding: 10px; }
+            section { margin: 50px 0; padding: 20px; }
+            .hero-stats { gap: 15px; }
+            .stat-item { padding: 8px 15px; }
+            .projects-links-grid { grid-template-columns: 1fr; }
+            .project-img-wrapper { height: 150px; }
+        }
+        .lang-switch {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: linear-gradient(135deg, #2a2aff, #aa44ff);
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            border: none;
+            box-shadow: 0 0 15px rgba(106,78,255,0.5);
+            transition: all 0.3s ease;
+            color: white;
+        }
+        .lang-switch:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(106,78,255,0.8);
+        }
+        .en-text { display: none; }
+        body.lang-en .ar-text { display: none; }
+        body.lang-en .en-text { display: inline; }
+        body.lang-en { direction: ltr; }
+        .success-toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #25D366;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            z-index: 2000;
+            animation: fadeUp 0.3s ease;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px);}
+            to { opacity: 1; transform: translateX(-50%) translateY(0);}
+        }
+        .whatsapp-btn-custom {
+            width: 100%;
+            margin-top: 15px;
+            background: #25D366;
+            border: none;
+        }
+        .whatsapp-btn-custom:hover {
+            background: #128C7E;
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body>
+    <div class="lang-switch" id="langToggle">🌐 عربي / English</div>
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="container">
+        <!-- القسم الرئيسي -->
+        <section class="hero">
+            <div class="avatar-3d">
+                <img src="Untitled.jpg" alt="Omer" onerror="this.src='https://via.placeholder.com/180?text=Omer'">
+            </div>
+            <h1>Omer</h1>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number ar-text">4 مشاريع منفذة</span>
+                    <span class="stat-number en-text">4 Completed Projects</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number ar-text">10+ عميل سعيد</span>
+                    <span class="stat-number en-text">10+ Happy Clients</span>
+                </div>
+            </div>
+            <p><span class="ar-text">أنا عمر، مهندس مهتم بالتقنية وبناء الحلول الرقمية</span><span class="en-text">I am Omer, an engineer focused on technology and digital solutions</span></p>
+            <div>
+                <a href="#contact" class="btn"><span class="ar-text">تواصل معي</span><span class="en-text">Contact Me</span></a>
+                <a href="#" id="cvDownloadBtn" download class="btn btn-outline"><span class="ar-text">📄 تحميل السيرة الذاتية</span><span class="en-text">📄 Download CV</span></a>
+            </div>
+        </section>
+
+        <!-- من أنا -->
+        <section>
+            <h2><span class="ar-text">من أنا</span><span class="en-text">About Me</span></h2>
+            <div style="display: flex; flex-wrap: wrap; gap: 30px; justify-content: center;">
+                <div class="skill-card" style="width: 300px;">
+                    <i class="fas fa-laptop-code" style="font-size: 3rem;"></i>
+                    <p class="ar-text">مهندس تقني شغوف بالبرمجة وتطوير الأنظمة، خبرة في تطوير الحلول الرقمية المتكاملة.</p>
+                    <p class="en-text">Tech engineer passionate about coding and digital systems.</p>
+                </div>
+                <div class="skill-card" style="width: 300px;">
+                    <i class="fas fa-brain" style="font-size: 3rem;"></i>
+                    <p class="ar-text">أحب تحليل المشاكل وابتكار حلول ذكية، دائم التعلم والتطوير.</p>
+                    <p class="en-text">Love problem-solving and building smart solutions, always learning.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- المهارات -->
+        <section>
+            <h2><span class="ar-text">المهارات</span><span class="en-text">Skills</span></h2>
+            <div class="skills-grid">
+                <div class="skill-card"><i class="fab fa-odoo" style="font-size: 2rem;"></i><h3>Odoo</h3><div class="progress-ring">88%</div></div>
+                <div class="skill-card"><i class="fas fa-code fa-2x"></i><h3>Frontend</h3><div class="progress-ring">78%</div></div>
+                <div class="skill-card"><i class="fas fa-puzzle-piece fa-2x"></i><h3>Problem Solving</h3><div class="progress-ring">83%</div></div>
+                <div class="skill-card"><i class="fas fa-comments fa-2x"></i><h3>Communication</h3><div class="progress-ring">92%</div></div>
+            </div>
+        </section>
+
+        <!-- المشاريع -->
+        <section>
+            <h2><span class="ar-text">مشاريعي المنفذة</span><span class="en-text">My Projects</span></h2>
+            <div class="projects-links-grid" id="projectsContainer"></div>
+        </section>
+
+        <!-- تواصل معي -->
+        <section id="contact">
+            <h2><span class="ar-text">تواصل معي</span><span class="en-text">Contact Me</span></h2>
+            <div class="contact-form">
+                <input type="text" id="contactName" placeholder="الاسم / Name">
+                <input type="email" id="contactEmail" placeholder="البريد الإلكتروني / Email">
+                <textarea id="contactMessage" rows="4" placeholder="رسالتك / Your message"></textarea>
+                
+                <button id="sendEmailBtn" class="btn" style="width:100%">
+                    <span class="ar-text">📧 إرسال عبر البريد الإلكتروني</span>
+                    <span class="en-text">📧 Send via Email</span>
+                </button>
+                
+                <button id="whatsappBtn" class="btn whatsapp-btn-custom" style="width:100%">
+                    <i class="fab fa-whatsapp"></i>
+                    <span class="ar-text">📱 إرسال عبر واتساب بدلاً من ذلك</span>
+                    <span class="en-text">📱 Send via WhatsApp Instead</span>
+                </button>
+                
+                <div class="contact-info">
+                    <p><i class="fas fa-phone-alt"></i> <a href="tel:+966509556259" dir="ltr">+966509556259</a></p>
+                    <p><i class="fas fa-envelope"></i> <a href="mailto:oelfaroog4@gmail.com" dir="ltr">oelfaroog4@gmail.com</a></p>
+                </div>
+                <div class="social-icons">
+                    <a href="https://www.linkedin.com/in/omer-elfaroug-44820a239" target="_blank"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://x.com/omer_elfaroo?s=21" target="_blank"><i class="fab fa-twitter"></i></a>
+                    <a href="https://www.instagram.com/oelfaroog" target="_blank"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>© 2025 Omer Portfolio - <span class="ar-text">جميع الحقوق محفوظة</span><span class="en-text">All Rights Reserved</span></p>
+        </footer>
+    </div>
+
+    <!-- Three.js Script for 3D Background -->
+    <script type="module">
+        import * as THREE from 'three';
+        const canvas = document.getElementById('bg-canvas');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x050510);
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas, alpha: false });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 1500;
+        const posArray = new Float32Array(particlesCount * 3);
+        for(let i = 0; i < particlesCount * 3; i += 3) {
+            posArray[i] = (Math.random() - 0.5) * 40;
+            posArray[i+1] = (Math.random() - 0.5) * 20;
+            posArray[i+2] = (Math.random() - 0.5) * 30 - 15;
+        }
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const particlesMaterial = new THREE.PointsMaterial({ size: 0.08, color: 0x6a4eff, transparent: true, opacity: 0.7, blending: THREE.AdditiveBlending });
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
+        
+        const sphereGeo = new THREE.SphereGeometry(0.2, 16, 16);
+        const sphereMat = new THREE.MeshStandardMaterial({ color: 0x3a86ff, emissive: 0x1a3366 });
+        const groupSpheres = new THREE.Group();
+        for(let i=0; i<60; i++) {
+            const sphere = new THREE.Mesh(sphereGeo, sphereMat);
+            sphere.position.set((Math.random() - 0.5)*25, (Math.random() - 0.5)*15, (Math.random() - 0.5)*20 - 10);
+            groupSpheres.add(sphere);
+        }
+        scene.add(groupSpheres);
+        
+        const ambientLight = new THREE.AmbientLight(0x404060);
+        scene.add(ambientLight);
+        const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+        dirLight.position.set(2,5,3);
+        scene.add(dirLight);
+        camera.position.z = 8;
+        camera.position.y = 2;
+        
+        let mouseX = 0, mouseY = 0;
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            mouseY = (event.clientY / window.innerHeight) * 2 - 1;
+        });
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            particlesMesh.rotation.y += 0.0005;
+            particlesMesh.rotation.x += 0.0003;
+            groupSpheres.rotation.y += 0.002;
+            camera.position.x += (mouseX * 0.5 - camera.position.x) * 0.05;
+            camera.position.y += (-mouseY * 0.3 - camera.position.y) * 0.05;
+            camera.lookAt(0, 0, 0);
+            renderer.render(scene, camera);
+        }
+        animate();
+        
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+    
+    <!-- Main JavaScript -->
+    <script>
+        // ========== بيانات المشاريع ==========
+        const projects = [
+            {
+                name: "نظام آلة حاسبة",
+                nameEn: "Calculator System",
+                desc: "نظام متكامل لإدارة الشركات والمؤسسات يشمل إدارة الموارد البشرية، المخزون، المبيعات والمشتريات",
+                descEn: "Complete ERP system for business management including HR, inventory, sales and purchasing",
+                bg: "1111REC.png",
+                link: "https://engomer97.github.io/calc/",
+                btn: "عرض المشروع",
+                btnEn: "View Project"
+            },
+            {
+                name: "منصة حجز الطبيب",
+                nameEn: "Doctor Appointment Platform",
+                desc: "منصة لحجز المواعيد الطبية وإدارة العيادات",
+                descEn: "Platform for booking medical appointments and clinic management",
+                bg: "2222REC.png",
+                link: "https://engomer97.github.io/dr/",
+                btn: "عرض المشروع",
+                btnEn: "View Project"
+            },
+            {
+                name: "منصة تدوين الملاحظات",
+                nameEn: "Notes Platform",
+                desc: "منصة لتدوين الملاحظات اليومية وإدارة المهام",
+                descEn: "Platform for daily notes and task management",
+                bg: "3333REC.png",
+                link: "https://engomer97.github.io/task/",
+                btn: "عرض المشروع",
+                btnEn: "Live Demo"
+            },
+            {
+                name: "موقع تجاري",
+                nameEn: "E-commerce Site",
+                desc: "موقع للتجارة الإلكترونية ومنتجات رقمية",
+                descEn: "E-commerce website for digital products",
+                bg: "4444REC.png",
+                link: "https://engomer97.github.io/eng.omerr/",
+                btn: "عرض الأعمال",
+                btnEn: "View Work"
+            }
+        ];
+
+        // ========== عرض المشاريع (الصورة في الأعلى) ==========
+        const container = document.getElementById('projectsContainer');
+        
+        projects.forEach(project => {
+            const card = document.createElement('div');
+            card.className = 'project-card';
+            
+            card.innerHTML = `
+                <div class="project-img-wrapper">
+                    <img src="${project.bg}" alt="${project.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x180?text=Project+Image'">
+                </div>
+                <div>
+                    <i class="fas fa-folder-open"></i>
+                    <h4 class="ar-text">${project.name}</h4>
+                    <h4 class="en-text" style="display:none">${project.nameEn}</h4>
+                    <p class="ar-text">${project.desc}</p>
+                    <p class="en-text" style="display:none">${project.descEn}</p>
+                    <a href="${project.link}" target="_blank" class="project-btn">
+                        <span class="ar-text">${project.btn}</span>
+                        <span class="en-text" style="display:none">${project.btnEn}</span>
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+                </div>
+            `;
+            
+            container.appendChild(card);
+        });
+
+        // تأثير hover على صور المشاريع
+        document.querySelectorAll('.project-card').forEach(card => {
+            const img = card.querySelector('.project-img-wrapper img');
+            if(img) {
+                card.addEventListener('mouseenter', () => img.style.transform = 'scale(1.05)');
+                card.addEventListener('mouseleave', () => img.style.transform = 'scale(1)');
+            }
+        });
+
+        // ========== وظيفة عرض الإشعارات ==========
+        function showToast(message, isError = false) {
+            const toast = document.createElement('div');
+            toast.className = 'success-toast';
+            toast.style.background = isError ? '#ff4444' : '#25D366';
+            toast.innerText = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // ========== إرسال عبر البريد الإلكتروني (mailto) ==========
+        const sendEmailBtn = document.getElementById('sendEmailBtn');
+        
+        sendEmailBtn.addEventListener('click', () => {
+            const name = document.getElementById('contactName').value.trim();
+            const email = document.getElementById('contactEmail').value.trim();
+            const message = document.getElementById('contactMessage').value.trim();
+            
+            if(!name || !email || !message) {
+                showToast("⚠ الرجاء ملء جميع الحقول", true);
+                return;
+            }
+            
+            const subject = `رسالة من ${name} - عبر موقع Portfolio`;
+            const body = `الاسم: ${name}%0Aالبريد الإلكتروني: ${email}%0A%0Aالرسالة:%0A${message}%0A%0A---%0Aتم الإرسال من موقع Omer Portfolio`;
+            
+            window.location.href = `mailto:oelfaroog4@gmail.com?subject=${encodeURIComponent(subject)}&body=${body}`;
+            showToast("✓ جاري فتح برنامج البريد الإلكتروني");
+        });
+
+        // ========== إرسال عبر واتساب ==========
+        const whatsappBtn = document.getElementById('whatsappBtn');
+        
+        whatsappBtn.addEventListener('click', () => {
+            const name = document.getElementById('contactName').value.trim();
+            const email = document.getElementById('contactEmail').value.trim();
+            const message = document.getElementById('contactMessage').value.trim();
+            
+            if(!name || !email || !message) {
+                showToast("⚠ الرجاء ملء جميع الحقول", true);
+                return;
+            }
+            
+            const text = `مرحباً عمر،%0Aالاسم: ${name}%0Aالبريد الإلكتروني: ${email}%0A%0Aالرسالة:%0A${message}`;
+            window.open(`https://wa.me/966509556259?text=${text}`, '_blank');
+            showToast("✓ جاري تحويلك إلى واتساب");
+        });
+
+        // ========== السيرة الذاتية ==========
+        document.getElementById('cvDownloadBtn').href = "Omer_Elfaroug_CV_Modified22 (1).pdf";
+
+        // ========== تبديل اللغة ==========
+        function updateLanguage() {
+            const isEn = document.body.classList.contains('lang-en');
+            
+            document.querySelectorAll('.project-card').forEach((card) => {
+                const arTitle = card.querySelector('h4.ar-text');
+                const enTitle = card.querySelector('h4.en-text');
+                const arDesc = card.querySelector('p.ar-text');
+                const enDesc = card.querySelector('p.en-text');
+                const arBtn = card.querySelector('.project-btn span.ar-text');
+                const enBtn = card.querySelector('.project-btn span.en-text');
+                
+                if(isEn) {
+                    if(arTitle) arTitle.style.display = 'none';
+                    if(enTitle) enTitle.style.display = 'block';
+                    if(arDesc) arDesc.style.display = 'none';
+                    if(enDesc) enDesc.style.display = 'block';
+                    if(arBtn) arBtn.style.display = 'none';
+                    if(enBtn) enBtn.style.display = 'inline';
+                } else {
+                    if(arTitle) arTitle.style.display = 'block';
+                    if(enTitle) enTitle.style.display = 'none';
+                    if(arDesc) arDesc.style.display = 'block';
+                    if(enDesc) enDesc.style.display = 'none';
+                    if(arBtn) arBtn.style.display = 'inline';
+                    if(enBtn) enBtn.style.display = 'none';
+                }
+            });
+        }
+
+        const langBtn = document.getElementById('langToggle');
+        langBtn.addEventListener('click', () => {
+            document.body.classList.toggle('lang-en');
+            updateLanguage();
+        });
+
+        // ========== تمرير سلس ==========
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if(target) target.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        // تهيئة اللغة
+        updateLanguage();
+    </script>
+</body>
+</html>
