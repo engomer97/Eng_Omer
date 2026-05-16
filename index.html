@@ -398,6 +398,10 @@
             background: #128C7E;
             transform: scale(1.02);
         }
+        /* تم إخفاء لوحة إدارة المشاريع نهائياً */
+        .admin-panel {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -405,7 +409,6 @@
     <canvas id="bg-canvas"></canvas>
 
     <div class="container">
-        <!-- القسم الرئيسي -->
         <section class="hero">
             <div class="avatar-3d">
                 <img src="Untitled.jpg" alt="Omer" onerror="this.src='https://via.placeholder.com/180?text=Omer'">
@@ -413,8 +416,8 @@
             <h1>Omer</h1>
             <div class="hero-stats">
                 <div class="stat-item">
-                    <span class="stat-number ar-text">4 مشاريع منفذة</span>
-                    <span class="stat-number en-text">4 Completed Projects</span>
+                    <span class="stat-number ar-text" id="projectsCount">6 مشاريع منفذة</span>
+                    <span class="stat-number en-text" id="projectsCountEn">6 Completed Projects</span>
                 </div>
                 <div class="stat-item">
                     <span class="stat-number ar-text">10+ عميل سعيد</span>
@@ -428,7 +431,6 @@
             </div>
         </section>
 
-        <!-- من أنا -->
         <section>
             <h2><span class="ar-text">من أنا</span><span class="en-text">About Me</span></h2>
             <div style="display: flex; flex-wrap: wrap; gap: 30px; justify-content: center;">
@@ -445,7 +447,6 @@
             </div>
         </section>
 
-        <!-- المهارات -->
         <section>
             <h2><span class="ar-text">المهارات</span><span class="en-text">Skills</span></h2>
             <div class="skills-grid">
@@ -456,13 +457,11 @@
             </div>
         </section>
 
-        <!-- المشاريع -->
         <section>
             <h2><span class="ar-text">مشاريعي المنفذة</span><span class="en-text">My Projects</span></h2>
             <div class="projects-links-grid" id="projectsContainer"></div>
         </section>
 
-        <!-- تواصل معي -->
         <section id="contact">
             <h2><span class="ar-text">تواصل معي</span><span class="en-text">Contact Me</span></h2>
             <div class="contact-form">
@@ -498,7 +497,6 @@
         </footer>
     </div>
 
-    <!-- Three.js Script for 3D Background -->
     <script type="module">
         import * as THREE from 'three';
         const canvas = document.getElementById('bg-canvas');
@@ -564,10 +562,9 @@
         });
     </script>
     
-    <!-- Main JavaScript -->
     <script>
-        // ========== بيانات المشاريع ==========
-        const projects = [
+        // ========== قائمة المشاريع النهائية (مع إضافة مشروع مؤسسة نماء المستديمة) ==========
+        const projectsData = [
             {
                 name: "نظام آلة حاسبة",
                 nameEn: "Calculator System",
@@ -607,102 +604,69 @@
                 link: "https://engomer97.github.io/eng.omerr/",
                 btn: "عرض الأعمال",
                 btnEn: "View Work"
+            },
+            // ===== المشروع الجديد: مؤسسة نماء المستديمة =====
+            {
+                name: "مؤسسة نماء المستديمة",
+                nameEn: "Nama Foundation",
+                desc: "مستوحاة من أشجار المملكة العربية السعودية العريقة، نقدم حلولاً ثلاثية الأبعاد في المقاولات وتنسيق الحدائق",
+                descEn: "Inspired by the ancient trees of Saudi Arabia, we provide 3D solutions in construction and landscaping.",
+                bg: "16.05.2026_13.34.27_REC.png",  // رابط الصورة المقدم من المستخدم
+                link: "https://engomer97.github.io/Nama-Foundation/", // رابط المشروع الفعلي
+                btn: "زيارة الموقع",
+                btnEn: "Visit Website"
             }
         ];
 
-        // ========== عرض المشاريع (الصورة في الأعلى) ==========
         const container = document.getElementById('projectsContainer');
         
-        projects.forEach(project => {
-            const card = document.createElement('div');
-            card.className = 'project-card';
-            
-            card.innerHTML = `
-                <div class="project-img-wrapper">
-                    <img src="${project.bg}" alt="${project.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x180?text=Project+Image'">
-                </div>
-                <div>
-                    <i class="fas fa-folder-open"></i>
-                    <h4 class="ar-text">${project.name}</h4>
-                    <h4 class="en-text" style="display:none">${project.nameEn}</h4>
-                    <p class="ar-text">${project.desc}</p>
-                    <p class="en-text" style="display:none">${project.descEn}</p>
-                    <a href="${project.link}" target="_blank" class="project-btn">
-                        <span class="ar-text">${project.btn}</span>
-                        <span class="en-text" style="display:none">${project.btnEn}</span>
-                        <i class="fas fa-arrow-left"></i>
-                    </a>
-                </div>
-            `;
-            
-            container.appendChild(card);
-        });
-
-        // تأثير hover على صور المشاريع
-        document.querySelectorAll('.project-card').forEach(card => {
-            const img = card.querySelector('.project-img-wrapper img');
-            if(img) {
-                card.addEventListener('mouseenter', () => img.style.transform = 'scale(1.05)');
-                card.addEventListener('mouseleave', () => img.style.transform = 'scale(1)');
-            }
-        });
-
-        // ========== وظيفة عرض الإشعارات ==========
-        function showToast(message, isError = false) {
-            const toast = document.createElement('div');
-            toast.className = 'success-toast';
-            toast.style.background = isError ? '#ff4444' : '#25D366';
-            toast.innerText = message;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
+        function renderProjects() {
+            container.innerHTML = '';
+            projectsData.forEach(project => {
+                const card = document.createElement('div');
+                card.className = 'project-card';
+                card.innerHTML = `
+                    <div class="project-img-wrapper">
+                        <img src="${project.bg}" alt="${project.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x180?text=Image+Not+Found'">
+                    </div>
+                    <div>
+                        <i class="fas fa-folder-open"></i>
+                        <h4 class="ar-text">${escapeHtml(project.name)}</h4>
+                        <h4 class="en-text" style="display:none">${escapeHtml(project.nameEn)}</h4>
+                        <p class="ar-text">${escapeHtml(project.desc)}</p>
+                        <p class="en-text" style="display:none">${escapeHtml(project.descEn)}</p>
+                        <a href="${escapeHtml(project.link)}" target="_blank" class="project-btn">
+                            <span class="ar-text">${escapeHtml(project.btn)}</span>
+                            <span class="en-text" style="display:none">${escapeHtml(project.btnEn)}</span>
+                            <i class="fas fa-arrow-left"></i>
+                        </a>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+            updateProjectsCount();
+            applyLanguageToProjects();
         }
 
-        // ========== إرسال عبر البريد الإلكتروني (mailto) ==========
-        const sendEmailBtn = document.getElementById('sendEmailBtn');
-        
-        sendEmailBtn.addEventListener('click', () => {
-            const name = document.getElementById('contactName').value.trim();
-            const email = document.getElementById('contactEmail').value.trim();
-            const message = document.getElementById('contactMessage').value.trim();
-            
-            if(!name || !email || !message) {
-                showToast("⚠ الرجاء ملء جميع الحقول", true);
-                return;
-            }
-            
-            const subject = `رسالة من ${name} - عبر موقع Portfolio`;
-            const body = `الاسم: ${name}%0Aالبريد الإلكتروني: ${email}%0A%0Aالرسالة:%0A${message}%0A%0A---%0Aتم الإرسال من موقع Omer Portfolio`;
-            
-            window.location.href = `mailto:oelfaroog4@gmail.com?subject=${encodeURIComponent(subject)}&body=${body}`;
-            showToast("✓ جاري فتح برنامج البريد الإلكتروني");
-        });
+        function escapeHtml(str) {
+            if(!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if(m === '&') return '&amp;';
+                if(m === '<') return '&lt;';
+                if(m === '>') return '&gt;';
+                return m;
+            });
+        }
 
-        // ========== إرسال عبر واتساب ==========
-        const whatsappBtn = document.getElementById('whatsappBtn');
-        
-        whatsappBtn.addEventListener('click', () => {
-            const name = document.getElementById('contactName').value.trim();
-            const email = document.getElementById('contactEmail').value.trim();
-            const message = document.getElementById('contactMessage').value.trim();
-            
-            if(!name || !email || !message) {
-                showToast("⚠ الرجاء ملء جميع الحقول", true);
-                return;
-            }
-            
-            const text = `مرحباً عمر،%0Aالاسم: ${name}%0Aالبريد الإلكتروني: ${email}%0A%0Aالرسالة:%0A${message}`;
-            window.open(`https://wa.me/966509556259?text=${text}`, '_blank');
-            showToast("✓ جاري تحويلك إلى واتساب");
-        });
+        function updateProjectsCount() {
+            const count = projectsData.length;
+            document.getElementById("projectsCount").innerText = `${count} مشاريع منفذة`;
+            document.getElementById("projectsCountEn").innerText = `${count} Completed Projects`;
+        }
 
-        // ========== السيرة الذاتية ==========
-        document.getElementById('cvDownloadBtn').href = "Omer_Elfaroug_CV_Modified22 (1).pdf";
-
-        // ========== تبديل اللغة ==========
-        function updateLanguage() {
+        function applyLanguageToProjects() {
             const isEn = document.body.classList.contains('lang-en');
-            
-            document.querySelectorAll('.project-card').forEach((card) => {
+            document.querySelectorAll('.project-card').forEach(card => {
                 const arTitle = card.querySelector('h4.ar-text');
                 const enTitle = card.querySelector('h4.en-text');
                 const arDesc = card.querySelector('p.ar-text');
@@ -728,13 +692,64 @@
             });
         }
 
-        const langBtn = document.getElementById('langToggle');
-        langBtn.addEventListener('click', () => {
-            document.body.classList.toggle('lang-en');
-            updateLanguage();
+        // دوال مساعدة
+        function showToast(message, isError = false) {
+            const toast = document.createElement('div');
+            toast.className = 'success-toast';
+            toast.style.background = isError ? '#ff4444' : '#25D366';
+            toast.innerText = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // إرسال البريد
+        document.getElementById('sendEmailBtn').addEventListener('click', () => {
+            const name = document.getElementById('contactName').value.trim();
+            const email = document.getElementById('contactEmail').value.trim();
+            const message = document.getElementById('contactMessage').value.trim();
+            if(!name || !email || !message) {
+                showToast("⚠ الرجاء ملء جميع الحقول", true);
+                return;
+            }
+            window.location.href = `mailto:oelfaroog4@gmail.com?subject=${encodeURIComponent(`رسالة من ${name}`)}&body=${encodeURIComponent(`الاسم: ${name}\nالبريد: ${email}\n\nالرسالة:\n${message}`)}`;
+            showToast("✓ جاري فتح برنامج البريد الإلكتروني");
         });
 
-        // ========== تمرير سلس ==========
+        // واتساب
+        document.getElementById('whatsappBtn').addEventListener('click', () => {
+            const name = document.getElementById('contactName').value.trim();
+            const email = document.getElementById('contactEmail').value.trim();
+            const message = document.getElementById('contactMessage').value.trim();
+            if(!name || !email || !message) {
+                showToast("⚠ الرجاء ملء جميع الحقول", true);
+                return;
+            }
+            window.open(`https://wa.me/966509556259?text=${encodeURIComponent(`مرحباً عمر،\nالاسم: ${name}\nالبريد: ${email}\n\nالرسالة:\n${message}`)}`, '_blank');
+            showToast("✓ جاري تحويلك إلى واتساب");
+        });
+
+        // السيرة الذاتية
+        document.getElementById('cvDownloadBtn').href = "Omer_Elfaroug_CV_Modified22 (1).pdf";
+
+        // تبديل اللغة
+        const langBtn = document.getElementById('langToggle');
+        function updateGlobalLanguage() {
+            const isEn = document.body.classList.contains('lang-en');
+            document.querySelectorAll('.ar-text, .en-text').forEach(el => {
+                if(el.classList.contains('ar-text') && isEn) el.style.display = 'none';
+                else if(el.classList.contains('ar-text') && !isEn) el.style.display = 'inline';
+                else if(el.classList.contains('en-text') && isEn) el.style.display = 'inline';
+                else if(el.classList.contains('en-text') && !isEn) el.style.display = 'none';
+            });
+            applyLanguageToProjects();
+        }
+        
+        langBtn.addEventListener('click', () => {
+            document.body.classList.toggle('lang-en');
+            updateGlobalLanguage();
+        });
+
+        // تمرير سلس
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -743,8 +758,11 @@
             });
         });
 
-        // تهيئة اللغة
-        updateLanguage();
+        // تحميل المشاريع
+        renderProjects();
+        updateGlobalLanguage();
+        
+        console.log("✅ تمت إضافة مشروع 'مؤسسة نماء المستديمة' مع الرابط والصورة المقدمة.");
     </script>
 </body>
 </html>
